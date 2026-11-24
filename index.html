@@ -50,7 +50,7 @@ h2{font-family:var(--serif);font-weight:400;font-size:28px;text-align:center;lin
 /* ---------- Portada ---------- */
 .hero{padding:0;position:relative}
 .hero .photo{height:68vh;min-height:420px;max-height:640px;position:relative;overflow:hidden}
-.hero .photo img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 6s ease}
+.hero .photo img{width:100%;height:100%;object-fit:cover;object-position:center 62%;transform:scale(1.08);transition:transform 6s ease}
 .hero.in .photo img{transform:scale(1)}
 .hero .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(40,15,20,.75))}
 .hero .txt{position:absolute;left:0;right:0;bottom:34px;text-align:center;color:#fff;z-index:2}
@@ -95,7 +95,7 @@ h2{font-family:var(--serif);font-weight:400;font-size:28px;text-align:center;lin
 .mem .when{font-size:11px;color:var(--soft);letter-spacing:.06em;margin-bottom:4px}
 .mem h3{font-family:var(--serif);font-weight:600;font-size:17px;margin-bottom:6px}
 .mem p{font-size:13.5px;line-height:1.6;color:#5d4a4d}
-.mem img{width:100%;border-radius:10px;margin-top:12px;aspect-ratio:4/3;object-fit:cover}
+.mem img{width:100%;border-radius:10px;margin-top:12px;aspect-ratio:4/5;object-fit:cover}
 
 /* ---------- Voz ---------- */
 .voice{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:26px;box-shadow:0 10px 30px rgba(140,40,60,.08)}
@@ -192,7 +192,7 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
   </section>
 
   <!-- VOZ -->
-  <section class="reveal">
+  <section class="reveal" id="vozSec">
     <div class="kicker">Escúchame</div>
     <h2>Un mensaje para ti</h2>
     <div class="voice">
@@ -239,8 +239,8 @@ const CONFIG = {
   cancion: {
     titulo: "Niño",
     artista: "Lia Kali",
-    audio: "media/cancion.mp3",         // si no existe, se usa el reproductor de Spotify
-    spotifyId: ""   // pega aquí el ID del enlace de Spotify
+    audio: "",                          // opcional: "media/cancion.mp3"; si está vacío se usa Spotify
+    spotifyId: "0pgdjVjKryRNr0a11fqG6W"
   },
   carta: [
     "Mi amor:",
@@ -253,20 +253,20 @@ const CONFIG = {
     "Te quiero. Hoy, mañana y siempre."
   ],
   recuerdos: [
-    { fecha: "Verano", titulo: "La noche que nos conocimos",
-      texto: "Matalascañas, el último día. Salimos de la discoteca y acabamos en la playa mirando las estrellas.", foto: "media/recuerdo1.jpg" },
-    { fecha: "30 de noviembre de 2025", titulo: "Empezamos",
-      texto: "El día en que esto se hizo oficial.", foto: "media/recuerdo2.jpg" },
-    { fecha: "Junio – septiembre 2026", titulo: "El verano a distancia",
-      texto: "Tres meses contando los días, tú en Estados Unidos y yo en Sevilla.", foto: "media/recuerdo3.jpg" },
-    { fecha: "19 de septiembre de 2026", titulo: "El reencuentro",
-      texto: "Barajas. El abrazo que llevábamos tres meses esperando.", foto: "media/recuerdo4.jpg" }
+    { titulo: "Matalascañas", foto: "media/recuerdo-playa.jpg",
+      texto: "Nuestra playa. Donde empezó todo, y donde cualquier atardecer contigo sabe a la primera vez." },
+    { titulo: "Rumbo a Almadén de la Plata", foto: "media/recuerdo-coche.jpg",
+      texto: "Una de nuestras primeras citas y de nuestros primeros viajes juntos. Tú mirando por la ventanilla y yo sin creerme la suerte que tenía." },
+    { titulo: "Nuestras tardes de peli", foto: "media/recuerdo-sofa.jpg",
+      texto: "Sofá, manta y peli… aunque alguno acabe dormido antes del final. Mis planes favoritos son los más simples, si son contigo." },
+    { titulo: "Nuestra cena en París", foto: "media/recuerdo-paris.jpg",
+      texto: "La noche que quisiste invitarme tú a cenar. Sin salir de Sevilla, nos fuimos a París." }
   ],
-  voz: { audio: "media/voz.mp3" },
+  voz: { audio: "" },                  // pon "media/voz.mp3" cuando lo grabes; vacío = no se muestra
   lugares: [
-    { nombre: "Matalascañas", texto: "Donde nos conocimos y vimos las estrellas.", lat: 36.9930, lng: -6.5560 },
-    { nombre: "Sevilla", texto: "Nuestra casa.", lat: 37.3891, lng: -5.9845 },
-    { nombre: "Aeropuerto de Madrid", texto: "Donde terminó la cuenta atrás.", lat: 40.4983, lng: -3.5676 }
+    { nombre: "Matalascañas", texto: "Nuestra playa. Donde empezó todo.", lat: 36.9930, lng: -6.5560 },
+    { nombre: "Almadén de la Plata", texto: "Uno de nuestros primeros viajes juntos.", lat: 37.8717, lng: -6.0806 },
+    { nombre: "Sevilla", texto: "Nuestra cena en París… sin salir de casa.", lat: 37.3891, lng: -5.9845 }
   ],
   sorpresa: "media/sorpresa-melendi.jpg",
   antesDeLaSorpresa: "Soy malísimo guardando sorpresas y sé que ya te lo estás oliendo… así que no aguanto más: te lo digo ya.",
@@ -308,15 +308,16 @@ tick(); setInterval(tick, 30000);
 /* Canción */
 const song = $('#song'), disc = $('#disc'), discBtn = $('#discBtn');
 $('#songTitle').textContent = CONFIG.cancion.titulo; $('#songArtist').textContent = CONFIG.cancion.artista;
-discBtn.innerHTML = PLAY; song.src = CONFIG.cancion.audio; song.loop = true;
+discBtn.innerHTML = PLAY; if (CONFIG.cancion.audio) song.src = CONFIG.cancion.audio; song.loop = true;
 let songOk = true;
 function showSpotify(){
   songOk = false; const s = $('#spotify'); s.style.display = 'block';
   s.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${CONFIG.cancion.spotifyId}?utm_source=generator&theme=0" width="100%" height="80" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
 }
 song.addEventListener('error', showSpotify);
+if (!CONFIG.cancion.audio) showSpotify();
 disc.addEventListener('click', () => {
-  if (!songOk) { showSpotify(); disc.classList.toggle('spin'); return; }
+  if (!songOk) { const on = disc.classList.toggle('spin'); discBtn.innerHTML = on ? PAUSE : PLAY; return; }
   if (song.paused) { song.play().then(() => { disc.classList.add('spin'); discBtn.innerHTML = PAUSE; }).catch(showSpotify); }
   else { song.pause(); disc.classList.remove('spin'); discBtn.innerHTML = PLAY; }
 });
@@ -330,13 +331,15 @@ const sign = document.createElement('p'); sign.className = 'sign'; sign.textCont
 const tl = $('#timeline');
 CONFIG.recuerdos.forEach(r => {
   const d = document.createElement('div'); d.className = 'mem reveal';
-  d.innerHTML = `<div class="when">${r.fecha}</div><h3>${r.titulo}</h3><p>${r.texto}</p>${r.foto ? '<img alt="">' : ''}`;
+  d.innerHTML = `${r.fecha ? `<div class="when">${r.fecha}</div>` : ''}<h3>${r.titulo}</h3><p>${r.texto}</p>${r.foto ? '<img alt="">' : ''}`;
   tl.appendChild(d); if (r.foto) setImg(d.querySelector('img'), r.foto, r.foto);
 });
 
 /* Voz */
 const voice = $('#voice'), wave = $('#wave'), vPlay = $('#vPlay'), N = 42;
-$('#vFrom').textContent = 'De ' + CONFIG.de; vPlay.innerHTML = PLAY; voice.src = CONFIG.voz.audio;
+if (!CONFIG.voz.audio) $('#vozSec').remove();
+else {
+$('#vFrom').textContent = 'De ' + CONFIG.de; vPlay.innerHTML = PLAY; if (CONFIG.voz.audio) voice.src = CONFIG.voz.audio;
 for (let i = 0; i < N; i++) { const b = document.createElement('i'); b.style.height = (18 + Math.abs(Math.sin(i * 1.7) * 55 + Math.sin(i * .5) * 25)) + '%'; wave.appendChild(b); }
 const fmt = s => isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : '0:00';
 voice.addEventListener('loadedmetadata', () => $('#vTime').textContent = fmt(voice.duration));
@@ -348,6 +351,7 @@ voice.addEventListener('ended', () => vPlay.innerHTML = PLAY);
 voice.addEventListener('error', () => $('#vTime').textContent = 'falta ' + CONFIG.voz.audio);
 vPlay.onclick = () => { if (voice.paused) { if (!song.paused) disc.click(); voice.play(); vPlay.innerHTML = PAUSE; } else { voice.pause(); vPlay.innerHTML = PLAY; } };
 wave.onclick = e => { const r = wave.getBoundingClientRect(); if (voice.duration) voice.currentTime = (e.clientX - r.left) / r.width * voice.duration; };
+}
 
 /* Mapa */
 let mapReady = false;
